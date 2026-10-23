@@ -1,3 +1,4 @@
+```dart
 import 'package:flutter/material.dart';
 import 'package:br_validators/br_validators.dart';
 import 'package:email_validator/email_validator.dart';
@@ -18,8 +19,6 @@ class _FormularioExemploState extends State<FormularioExemplo> {
   final _cpfController = TextEditingController();
   final _emailController = TextEditingController();
   final _senhaController = TextEditingController();
-
-  get BRValidators => null;
 
   void _submeterFormulario() {
     if (_formKey.currentState!.validate()) {
@@ -76,6 +75,29 @@ class _FormularioExemploState extends State<FormularioExemplo> {
                   if (value == null || value.trim().isEmpty) {
                     return 'Informe sua data de nascimento!';
                   }
+
+                  final data = value!.trim();
+                  final formato = RegExp(r'^\\d{2}/\\d{2}/\\d{4}$');
+
+                  if (!formato.hasMatch(data)) {
+                    return 'Use o formato DD/MM/AAAA!';
+                  }
+
+                  final partes = data.split('/');
+                  final dia = int.parse(partes[0]);
+                  final mes = int.parse(partes[1]);
+                  final ano = int.parse(partes[2]);
+
+                  final dataValida = DateTime(ano, mes, dia);
+
+                  if (dataValida.day != dia ||
+                      dataValida.month != mes ||
+                      dataValida.year != ano ||
+                      ano < 1900 ||
+                      dataValida.isAfter(DateTime.now())) {
+                    return 'Informe uma data válida!';
+                  }
+
                   return null;
                 },
               ),
@@ -93,9 +115,11 @@ class _FormularioExemploState extends State<FormularioExemplo> {
                   if (value == null || value.trim().isEmpty) {
                     return 'Informe seu CPF!';
                   }
-                   if (!BRValidators.validateCPF(value)) {
-            return 'CPF inválido.';
-          }
+
+                  if (!BRValidators.validateCPF(value)) {
+                    return 'CPF inválido.';
+                  }
+
                   return null;
                 },
               ),
@@ -110,12 +134,14 @@ class _FormularioExemploState extends State<FormularioExemplo> {
                   border: OutlineInputBorder(),
                 ),
                 validator: (value) {
-                  if (value == null || !value.contains('@')) {
-                    return 'Informe um e-mail válido!';
-            }
-                   if (!FormFieldValidator.validateEmail(value)) {
-            return 'Email inválido.';
+                  if (value == null || value.trim().isEmpty) {
+                    return 'Informe seu e-mail!';
                   }
+
+                  if (!EmailValidator.validate(value.trim())) {
+                    return 'E-mail inválido.';
+                  }
+
                   return null;
                 },
               ),
@@ -150,3 +176,4 @@ class _FormularioExemploState extends State<FormularioExemplo> {
     );
   }
 }
+```
